@@ -13,17 +13,16 @@ const Wishlist = React.memo(() => {
         WishList Items
       </p>
       {isWishListdata ? (
-        <div className="2xl:w-[75%]">
-          <Suspense fallback={<ProductLoader />}>
-            <ProductCard
-              category="All items"
-              products={inventories.filter((gro) => gro.isWishListed)}
-            />
-          </Suspense>
-        </div>
+        <Suspense fallback={<ProductLoader />}>
+          <ProductCard
+            category="All items"
+            products={inventories.filter((gro) => gro.isWishListed)}
+          />
+        </Suspense>
       ) : (
         <Message
-          icon="./svg/heart.svg"
+          type="Warnings"
+          icon="./svg/heartWarning.svg"
           message="WishList is Empty"
           subMessage="Oops! It seems your Wishlist is currently empty. Let's fill it up with all the things you desire! Start adding items now and watch your dream list grow. Happy Wishlist-ing! "
           link="/"

@@ -1,4 +1,10 @@
-import React, { useState, createContext, useEffect, lazy, Suspense } from "react";
+import React, {
+  useState,
+  createContext,
+  useEffect,
+  lazy,
+  Suspense,
+} from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Error from "./components/Error";
@@ -14,6 +20,7 @@ const Wishlist = lazy(() => import("./components/Wishlist"));
 const App = () => {
   const [inventories, setInventories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const handleSearch = (e) => {
     setSearchTerm(e?.target?.value);
@@ -37,21 +44,25 @@ const App = () => {
         });
 
         const groceriesData = localStorage.getItem("groceries");
-        setInventories(
-          groceriesData?.length ? JSON.parse(groceriesData) : updatedData
-        );
+        const savedInventories = groceriesData
+          ? JSON.parse(groceriesData)
+          : updatedData;
+
+        setInventories(savedInventories);
+
         if (!groceriesData.length) {
           localStorage.setItem("groceries", JSON.stringify(updatedData));
         }
       } catch (error) {
         console.error("Error fetching products:", error);
       }
+      setLoading(false);
     };
 
     fetchGroceries();
   }, []);
-  const cartCount = inventories?.filter((gro) => gro.isInCart);
-  const wishListCount = inventories?.filter((gro) => gro.isWishListed);
+  const cartCount = inventories?.filter((gro) => gro?.isInCart);
+  const wishListCount = inventories?.filter((gro) => gro?.isWishListed);
 
   return (
     <CartContext.Provider
@@ -68,14 +79,18 @@ const App = () => {
             wishListCount={wishListCount?.length}
             handleSearch={handleSearch}
           />
-          <Suspense fallback={<ProductLoader grid={4} length={8} />}>
-            <Routes>
-              <Route exact path="/" element={<Groceries />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="*" element={<Error />} />
-            </Routes>
-          </Suspense>
+          {loading ? (
+            <ProductLoader />
+          ) : (
+            <Suspense fallback={<ProductLoader grid={4} length={8} />}>
+              <Routes>
+                <Route exact path="/" element={<Groceries />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="*" element={<Error />} />
+              </Routes>
+            </Suspense>
+          )}
         </div>
       </Router>
     </CartContext.Provider>

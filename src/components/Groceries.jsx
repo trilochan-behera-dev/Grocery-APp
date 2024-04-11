@@ -26,14 +26,9 @@ const Groceries = () => {
       <p className="text-2xl text-gray-600 capitalize font-semibold">
         Trending Items
       </p>
-      <div className="2xl:w-[75%]">
-        <Suspense fallback={<ProductLoader />}>
-          <ProductCard
-            category={selectedCategory}
-            products={inventories}
-          />
-        </Suspense>
-      </div>
+      <Suspense fallback={<ProductLoader />}>
+        <ProductCard category={selectedCategory} products={inventories} />
+      </Suspense>
     </div>
   );
 };
